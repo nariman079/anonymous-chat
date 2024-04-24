@@ -1,4 +1,5 @@
-.idea
+.idea/sonarlint
+.idea/
 .venv
 
 test_main.http
