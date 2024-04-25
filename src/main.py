@@ -8,6 +8,7 @@ app.include_router(
     router=chat_router,
 )
 
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
