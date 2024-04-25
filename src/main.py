@@ -1,7 +1,12 @@
 from fastapi import FastAPI
 
+from src.routers import chat_router
+
 app = FastAPI()
 
+app.include_router(
+    router=chat_router,
+)
 
 @app.get("/")
 async def root():
