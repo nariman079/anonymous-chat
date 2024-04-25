@@ -7,4 +7,3 @@
 - Python
 - FastAPI
 - Websockets
-- FastAPI <!-- TOC -->
