@@ -5,9 +5,7 @@ from starlette.websockets import WebSocket
 
 from src.services import chat_services
 
-chat_router = APIRouter(
-    prefix='/ws/chats'
-)
+chat_router = APIRouter()
 
 room_list: Dict[str, chat_services.Room] = {}
 

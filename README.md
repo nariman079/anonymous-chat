@@ -7,3 +7,5 @@
 - Python
 - FastAPI
 - Websockets
+- SqlAlchemy
+- Postgresql
