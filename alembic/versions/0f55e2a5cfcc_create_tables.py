@@ -1,18 +1,18 @@
-"""create user table
+"""create_tables
 
-Revision ID: 3bf820e9ac0b
+Revision ID: 0f55e2a5cfcc
 Revises: 
-Create Date: 2024-04-26 16:41:16.468693
+Create Date: 2024-04-28 14:50:19.562378
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-
+from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '3bf820e9ac0b'
+revision: str = '0f55e2a5cfcc'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -23,10 +23,16 @@ def upgrade() -> None:
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(), nullable=False),
-    sa.Column('email', sa.String(), nullable=False),
-    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('email', sa.String(), nullable=True),
+    sa.Column('telegram_id', sa.String(), nullable=True),
+    sa.Column('first_name', sa.String(), nullable=True),
+    sa.Column('last_name', sa.String(), nullable=True),
+    sa.Column('additional_information', sa.String(), nullable=True),
+    sa.Column('account_status', postgresql.ENUM('ACTIVE', 'NO_ACTIVE', 'DELETED', name='account_status_enum'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email')
+    sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('telegram_id'),
+    sa.UniqueConstraint('username')
     )
     # ### end Alembic commands ###
 
