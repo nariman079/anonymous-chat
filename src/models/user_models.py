@@ -1,5 +1,7 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.dialects.postgresql import ENUM as PgEnum
 from src.database import Base
+from src.enums.status_enums import AccountStatus
 
 
 class User(Base):
@@ -12,5 +14,5 @@ class User(Base):
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)
     additional_information = Column(String, nullable=True)
-    is_active = Column(Boolean, default=False)
+    account_status = Column(PgEnum(AccountStatus, name='account_status_enum'), default=AccountStatus.NO_ACTIVE, nullable=False)
 

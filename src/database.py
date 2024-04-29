@@ -1,9 +1,9 @@
-from typing import Generator
+from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = 'postgresql+asyncpg://test_fast_api:test_fast_api@localhost/localdb_fast_api'
+DATABASE_URL = 'postgresql+asyncpg://postgres:postgres@localhost:5438/postgres'
 
 engine = create_async_engine(
     DATABASE_URL,
@@ -15,7 +15,7 @@ async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession
 Base = declarative_base()
 
 
-async def get_db() -> Generator:
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """ Dependency for getting async session """
     try:
         session: AsyncSession = async_session()

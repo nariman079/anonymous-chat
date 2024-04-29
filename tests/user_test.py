@@ -1,7 +1,8 @@
-from tests.test_config import client
+from tests.test_config import temp_db, client
 
 
-def test_create_telegram_user():
+@temp_db
+def test_create_user():
     request_data = {
         "username": "string",
         "telegram_id": "string",
@@ -9,6 +10,8 @@ def test_create_telegram_user():
         "last_name": "string",
         "additional_information": "string"
     }
-
-    response = client.post('/users/telegram_users/', json=request_data)
-    assert response.status_code == 500
+    response = client.post(
+        url='/users/',
+        json=request_data
+    )
+    assert response.status_code == 1

@@ -1,58 +1,47 @@
-import asyncio
-from typing import AsyncGenerator
-
 import pytest
-from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from fastapi.testclient import TestClient
+from sqlalchemy_utils import database_exists, drop_database
+from starlette.testclient import TestClient
 
 from src.database import Base, get_db
 from src.main import app
 
-TEST_DATABASE_URL = "postgresql+asyncpg://postgres_test:postgres_test@0.0.0.0:5343/postgres_test"
 
-test_engine = create_async_engine(
-    url=TEST_DATABASE_URL,
-    future=True,
-    echo=True
-)
-test_session = sessionmaker(
-    test_engine,
-    class_=AsyncSession,
-    expire_on_commit=False
-)
-Base.metadata.bind = test_engine
+@pytest.fixture(scope='function')
+def session_local():
+    DATABASE_URL = "sqlite:///./test_temp.db"
+    engine = create_engine(DATABASE_URL)
 
+    assert not database_exists(DATABASE_URL), "Test database already exists. Aborting tests."
 
-async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    async with test_session() as session:
-        yield session
+    # Create test database and tables
+    Base.metadata.create_all(engine)
+    session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+    # Run the tests
+    yield session_local
 
-app.dependency_overrides[get_db] = override_get_async_session
+    # Drop the test database
+    drop_database(DATABASE_URL)
 
 
-@pytest.fixture(scope='session', autouse=True)
-async def prepare_database():
-    async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield
-    async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+def temp_db(f):
+    def func(*args, **kwargs):
+        def override_get_db():
+            try:
+                db = session_local()
+                yield db
+            finally:
+                db.close()
 
+        app.dependency_overrides[get_db] = override_get_db
 
-@pytest.fixture(scope='session')
-def event_loop(request):
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+        f(*args, **kwargs)
+
+        app.dependency_overrides[get_db] = get_db
+
+    return func
 
 
 client = TestClient(app)
-
-
-@pytest.fixture(scope='session')
-async def ac() -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncClient(app=app, base_url='http://test') as ac:
-        yield ac

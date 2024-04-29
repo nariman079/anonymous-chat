@@ -5,19 +5,19 @@ services:
 
   # Postgresql Develop
   db:
-    image: postgres:14.1-alpine
-    container_name: 'db_develop'
+    image: postgres:14-alpine
+    container_name: db_develop
     restart: unless-stopped
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
     ports:
-      - "5342:5342"
+      - "5438:5432"
     networks:
       - net
 
-  # Postgresql Test
+
   db_test:
     image: postgres:14.1-alpine
     container_name: 'db_test'
@@ -27,33 +27,33 @@ services:
       - POSTGRES_PASSWORD=postgres_test
       - POSTGRES_DB=postgres_test
     ports:
-      - "5343:5342"
+      - "5434:5432"
     networks:
       - net
 
-  # FastAPI
-  backend:
-    build: .
-    restart: unless-stopped
-    container_name: backend
-    command: /bin/bash -c "uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4"
-    volumes:
-      - .:/app
-    ports:
-      - '8000:8000'
-    networks:
-      - net
-
-  # Nginx
-  nginx:
-    image: nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-    networks:
-      - net
+#  # FastAPI
+#  backend:
+#    build: .
+#    restart: unless-stopped
+#    container_name: backend
+#    command: /bin/bash -c "uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4"
+#    volumes:
+#      - .:/app
+#    ports:
+#      - '8000:8000'
+#    networks:
+#      - net
+#
+#  # Nginx
+#  nginx:
+#    image: nginx
+#    restart: unless-stopped
+#    ports:
+#      - "80:80"
+#    depends_on:
+#      - backend
+#    networks:
+#      - net
 
 
 networks:

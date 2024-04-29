@@ -1,6 +1,7 @@
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel, EmailStr, validator
 
+from src.enums.status_enums import AccountStatus
 from src.schemas.base_schemas import TunedModel
 
 
@@ -26,11 +27,12 @@ class TelegramUserCreate(BaseModel):
     additional_information: str
 
 
+
 class ShowUser(TunedModel):
     id: int
     username: str
     email: EmailStr
-    is_active: bool
+    account_status: str
 
 
 class ShowTelegramUser(TunedModel):
@@ -40,4 +42,9 @@ class ShowTelegramUser(TunedModel):
     first_name: str
     last_name: str
     additional_information: str
-    is_active: bool
+    account_status: str
+
+
+class DeleteUser(TunedModel):
+    user_id: int
+    status: str = AccountStatus.DELETED

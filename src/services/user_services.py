@@ -17,7 +17,7 @@ async def _create_new_user(body: UserCreate, async_session: AsyncSession) -> Sho
                 id=user.id,
                 username=user.username,
                 email=user.email,
-                is_active=user.is_active
+                account_status=user.account_status
             )
 
 
@@ -44,5 +44,17 @@ async def _create_new_telegram_user(
                 first_name=user.first_name,
                 last_name=user.last_name,
                 additional_information=user.additional_information,
-                is_active=user.is_active
+                account_status=user.account_status
             )
+
+
+async def _delete_user(
+        user_id: int,
+        async_session: AsyncSession
+) -> None | int:
+    """ Асинхронное удаление пользователя """
+    async with async_session as session:
+        async with session.begin():
+            user_manage = UserManager(session)
+            deleted_user_id = await user_manage.delete_user(user_id=user_id)
+            return deleted_user_id
