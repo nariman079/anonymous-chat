@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "anonymous-chat-fast-api-websockets"
+version = "0.1.0"
+description = ""
+authors = ["nariman079 <nariman079i@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.110.2"
+sqlalchemy = "^2.0.29"
+asyncpg = "^0.29.0"
+postgres = "^4.0"
+pytest = "^8.1.2"
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src"]
+asyncio_mode = "auto"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
